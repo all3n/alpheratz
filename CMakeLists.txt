@@ -54,10 +54,13 @@ set(${PROJECT_NAME}_LIBS
   absl::strings
   -Wl,-Bstatic
   glog
+  ssl
+  crypto
   -l:libunwind.a
-  gflags pthread
+  gflags
   lzma
   -Wl,-Bdynamic
+  pthread
 )
 target_link_libraries(${PROJECT_NAME} ${${PROJECT_NAME}_LIBS})
 target_link_libraries(${PROJECT_NAME}_shared PRIVATE ${${PROJECT_NAME}_LIBS})

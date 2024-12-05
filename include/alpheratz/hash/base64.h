@@ -11,7 +11,7 @@ int EncodeNeedSize(size_t in_size);
 void Base64Encode(std::string_view s, std::string &out);
 
 int DecodeNeedSize(size_t in_size);
-void Base64Decode(std::string_view s, std::string &out);
+int Base64Decode(std::string_view in, uint8_t *out, size_t buf_len) ;
 
 }  // namespace hash
 }  // namespace alpheratz

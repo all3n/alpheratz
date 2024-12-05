@@ -4,7 +4,8 @@
 
 namespace alpheratz {
 namespace hash {
-void Md5(const unsigned char *key, unsigned int length, unsigned char *result);
-void Md5(std::string_view s, char *output);
+void Md5Hash(const unsigned char *key, unsigned int length, unsigned char *result);
+void Md5Hash(std::string_view s, char *output);
+void Md5Hash(std::string_view s, std::string &output);
 }  // namespace hash
 }  // namespace alpheratz

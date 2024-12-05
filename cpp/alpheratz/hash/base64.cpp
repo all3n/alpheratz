@@ -3,6 +3,18 @@
 
 namespace alpheratz {
 namespace hash {
+int EncodeNeedSize(size_t in_size) {
+    size_t out;
+    EVP_EncodedLength(&out, in_size);
+    return out;
+}
+int DecodeNeedSize(size_t in_size) {
+    size_t out;
+    EVP_DecodedLength(&out, in_size);
+    return out;
+}
+// void Base64Encode(std::string_view s, std::string &out);
+// void Base64Decode(std::string_view s, std::string &out);
 
 void Base64Encode(std::string_view s, std::string &out) {
     size_t outlen = 0;

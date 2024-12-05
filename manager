@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+export PROJECT=alpheratz
+bin=$(dirname "$0")
+export APP_DIR=$(cd "$bin/" || exit; pwd)
+export BUILD_DIR=${APP_DIR}/build
+: ${APP_DEPS_DIR="${HOME}/.cache/${PROJECT}/deps"}
+: ${APP_INSTALL_DIR="${HOME}/.local/${PROJECT}"}
+export APP_DEPS_DIR
+export APP_INSTALL_DIR
+export DESC_build="build ${PROJECT}"
+BIN_SCRIPTS=$(ls $APP_DIR/bin/load.d/*.sh)
+for BIN_SCRIPT in $BIN_SCRIPTS;do
+  #echo ${BIN_SCRIPT}
+  source "$BIN_SCRIPT"
+done
+
+export CMAKE_BIN=$(detect_cmake_bin)
+
+
+#echo $CMAKE_BIN
+start_cmake_config(){
+  start_gen_git_revision
+  rm -rf build
+  ${CMAKE_BIN} -DAPP_INSTALL_DIR="${APP_INSTALL_DIR}" -DCMAKE_BUILD_TYPE=Release -B build $@ .
+}
+
+
+start_build(){
+  start_gen_git_revision
+  ${CMAKE_BIN} -DAPP_INSTALL_DIR="${APP_INSTALL_DIR}" -DCMAKE_BUILD_TYPE=Release -B build .
+  make -C build -j"$(nproc)"
+}
+start_build_only(){
+  start_gen_git_revision
+  make -C build -j"$(nproc)" $@
+}
+
+
+start_build_debug(){
+  start_gen_git_revision
+  ${CMAKE_BIN} -DAPP_INSTALL_DIR="${APP_INSTALL_DIR}" -DCMAKE_BUILD_TYPE=Debug -B build .
+  make -C build -j"$(nproc)"
+}
+start_py_env(){
+  # for ta-lib install
+  export C_INCLUDE_PATH="${APP_INSTALL_DIR}/include"
+  export CPLUS_INCLUDE_PATH="${C_INCLUDE_PATH}"
+  export LIBRARY_PATH="${APP_INSTALL_DIR}/lib"
+  export TA_INCLUDE_PATH="${C_INCLUDE_PATH}"
+  export TA_LIBRARY_PATH="${LIBRARY_PATH}"
+  export HDF5_DIR=${APP_INSTALL_DIR}
+  pip install -r requirements.txt
+}
+start_check(){
+  echo "cmake bin:${CMAKE_BIN}"
+  echo "python: " $(which python)
+}
+
+ACTION=$1
+FUNLIST=`typeset -f|grep " ()"|awk -F'start_' '{print $2}'|awk '{print $1}'|grep -v "^$"`
+if [[ -z "$ACTION" ]];then
+    echo "$0 action"
+    echo "ACTION LIST:"
+    for FN in $FUNLIST;do
+        VAR_DESC="DESC_$FN"
+        printf "%20s\t%-30s\n" "$FN" "${!VAR_DESC}"
+    done
+    exit
+fi
+shift 1
+ACTIONS=`echo $ACTION|tr ',' ' '`
+for AN in ${ACTIONS[@]};do
+    echo "start $AN"
+    eval "start_$AN" $@
+done

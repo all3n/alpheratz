@@ -1,4 +1,6 @@
 # alpheratz c++ libs collections
+## BUILD
+[![CMake on multiple platforms](https://github.com/all3n/alpheratz/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/all3n/alpheratz/actions/workflows/cmake-multi-platform.yml)
 
 ## Standard
 1. use C++17 new Style 
